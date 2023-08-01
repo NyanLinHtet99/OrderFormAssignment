@@ -2,7 +2,7 @@ import './bootstrap';
 import $ from "jquery";
 window.$ = window.jQuery = $;
 import L from "leaflet";
-
+import '@selectize/selectize';
 // Promisifying the geolocation API
 let getLocationPromise = () => {
     return new Promise(function (resolve, reject) {
@@ -39,3 +39,35 @@ function setUpMap(pos) {
         pin.setLatLng(ev.latlng);
     });
 }
+(function () {
+    'use strict'
+    var form = document.querySelector('.needs-validation')
+    form.addEventListener('submit', function (event) {
+        if (!customValidation() || !form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+        }
+
+        form.classList.add('was-validated');
+    });
+    function customValidation() {
+        if ($('#product').val() === '') {
+            $('#product').removeClass('is-valid');
+            $('#product').addClass('is-invalid');
+            return false;
+        }
+        $('#product').removeClass('is-invalid');
+        $('#product').addClass('is-valid');
+        return true;
+    }
+    var select = $('select').selectize({
+        sortField: 'text',
+        items: [],
+    });
+    $('select').each(
+        function () {
+            var control = this.selectize;
+            control.clear();
+        }
+    )
+})()
