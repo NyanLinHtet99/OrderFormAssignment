@@ -60,14 +60,62 @@ function setUpMap(pos) {
         $('#product').addClass('is-valid');
         return true;
     }
-    var select = $('select').selectize({
-        sortField: 'text',
-        items: [],
+    // $('select').selectize({
+    //     sortField: 'text',
+    //     items: [],
+    // });
+    // $('select').each(
+    //     function () {
+    //         var control = this.selectize;
+    //         control.clear();
+    //     }
+    // )
+    $('#nrc_region').selectize({
+        valueField: 'id',
+        labelField: 'nrcRegion',
+        searchField: 'nrcRegion',
+        options: [],
+        selectOnTab: true,
+        closeAfterSelect: true,
+        onChange: reqTownship,
     });
-    $('select').each(
-        function () {
-            var control = this.selectize;
-            control.clear();
-        }
-    )
+    $('#nrc_township').selectize({
+        valueField: 'name',
+        labelField: 'name',
+        searchField: 'name',
+        selectOnTab: true,
+        closeAfterSelect: true,
+    });
+    function reqTownship(id) {
+        $.ajax({
+            url: "/nrctownships",
+            data: { "id": id },
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                let select = $('#nrc_township')[0].selectize;
+                select.clearOptions();
+                response.map(function (name) {
+                    select.addOption({
+                        'name': name
+                    })
+                })
+                select.settings.placeholder = 'OoKaMa';
+                select.updatePlaceholder();
+            },
+        });
+    }
+    $.ajax({
+        url: "/nrcregions/",
+        type: "get",
+        dataType: "json",
+        success: function (response) {
+            let select = $('#nrc_region')[0].selectize;
+            response.map(function (id) {
+                select.addOption({
+                    'id': id, 'nrcRegion': id + '/'
+                })
+            })
+        },
+    });
 })()

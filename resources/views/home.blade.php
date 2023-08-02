@@ -23,28 +23,23 @@
                 </div>
                 <form class="row g-3 needs-validation mt-5" novalidate>
                     <div class="col-md-12 row">
-                        <div class="col-md-2">
-                            <select type='text' class="form-select" aria-label="products" id=""
-                                placeholder="12/" name="product" required>
-                                <option value="Product A">Product A</option>
-                                <option value="Product B">Product B</option>
-                                <option value="Product C">Product C</option>
+                        <div class="col-md-3">
+                            <select type='text' aria-label="nrc_region" id="nrc_region" placeholder="12/"
+                                name="nrc_region" required>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <select type='text' class="form-select" aria-label="products" id=""
-                                placeholder="OoKaMa" name="product" required>
-                                <option value="Product A">Product A</option>
-                                <option value="Product B">Product B</option>
-                                <option value="Product C">Product C</option>
+                        <div class="col-md-3">
+                            <select type='text' class="form-select" aria-label="nrc_township" id="nrc_township"
+                                placeholder="select region first" name="nrc_township" required>
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <select type='text' class="form-select " aria-label="products" id=""
-                                placeholder="(C)" name="product" required>
-                                <option value="Product A">Product A</option>
-                                <option value="Product B">Product B</option>
-                                <option value="Product C">Product C</option>
+                            <select type='text' class="form-select" aria-label="Nrc Type" id="nrc_type"
+                                placeholder="(C)" name="nrc_type" required>
+                                <option value="C">(C)</option>
+                                <option value="N">(N)</option>
+                                <option value="M">(M)</option>
+                                <option value="V">(V)</option>
                             </select>
                         </div>
                         <div class="col-md-4">

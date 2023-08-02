@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\NrcRegionController;
+use App\Http\Controllers\NrcTownshipController;
+use App\Models\NrcRegion;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +24,5 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/nrcregions', [NrcRegionController::class, 'index']);
+Route::get('/nrctownships', [NrcTownshipController::class, 'show']);
