@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\NrcRegionController;
 use App\Http\Controllers\NrcTownshipController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Models\NrcRegion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +28,5 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/nrcregions', [NrcRegionController::class, 'index']);
 Route::get('/nrctownships', [NrcTownshipController::class, 'show']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::post('/order/store', [OrderController::class, 'store']);

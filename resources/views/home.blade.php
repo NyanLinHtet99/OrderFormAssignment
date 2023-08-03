@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -21,7 +30,8 @@
 
                     </form>
                 </div>
-                <form class="row g-3 needs-validation mt-5" novalidate>
+                <form action="/order/store" method="POST" class="row g-3 needs-validation mt-5" novalidate>
+                    @csrf
                     <div class="col-md-12 row">
                         <div class="col-md-3">
                             <select type='text' aria-label="nrc_region" id="nrc_region" placeholder="12/"
@@ -34,7 +44,7 @@
                             </select>
                         </div>
                         <div class="col-md-2">
-                            <select type='text' class="form-select" aria-label="Nrc Type" id="nrc_type"
+                            <select type='text' class="form-select" aria-label="nrc_type" id="nrc_type"
                                 placeholder="(C)" name="nrc_type" required>
                                 <option value="C">(C)</option>
                                 <option value="N">(N)</option>
@@ -43,16 +53,16 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="name" placeholder="NRC no" name="nrc_no"
+                            <input type="number" class="form-control" id="nrc_no" placeholder="NRC no" name="nrc_no"
                                 required>
                             <div class="invalid-feedback">
-                                Please provide your NRC no
+                                Please provide a valid NRC
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" placeholder="Your Name" name="phone"
+                        <input type="text" class="form-control" id="name" placeholder="Your Name" name="name"
                             required>
                         <div class="valid-feedback">
                             Looks good!
@@ -91,23 +101,19 @@
                         <label for="product" class="form-label">Product</label>
                         <select type='text' class="form-select" aria-label="products" id="product"
                             placeholder="Select a product" name="product">
-                            <option value="Product A">Product A</option>
-                            <option value="Product B">Product B</option>
-                            <option value="Product C">Product C</option>
                         </select>
+                        <p class="text-sm mt-3" id="price"></p>
                         <div class="invalid-feedback">
                             Please select a product.
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label for="lat" class="form-label">Latitude</label>
-                        <input type="text" class="form-control" id="lat" name="lat" required readonly
-                            disabled>
+                        <input type="text" class="form-control" id="lat" name="lat" required readonly>
                     </div>
                     <div class="col-md-3">
                         <label for="lng" class="form-label">Longitude</label>
-                        <input type="text" class="form-control" id="lng" name="lng" required readonly
-                            disabled>
+                        <input type="text" class="form-control" id="lng" name="lng" required readonly>
                     </div>
                     <div class="col-12">
                         <button class="btn btn-primary" type="submit">Submit form</button>

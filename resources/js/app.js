@@ -6,7 +6,7 @@ import '@selectize/selectize';
 // Promisifying the geolocation API
 let getLocationPromise = () => {
     return new Promise(function (resolve, reject) {
-        let defaultPos = L.latLng(16.8746163450411, 96.13998413085939);
+        let defaultPos = L.latLng(16.8067072, 96.1806336);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => resolve(L.latLng(position.coords.latitude, position.coords.longitude)),
@@ -74,7 +74,6 @@ function setUpMap(pos) {
         valueField: 'id',
         labelField: 'nrcRegion',
         searchField: 'nrcRegion',
-        options: [],
         selectOnTab: true,
         closeAfterSelect: true,
         onChange: reqTownship,
@@ -85,6 +84,14 @@ function setUpMap(pos) {
         searchField: 'name',
         selectOnTab: true,
         closeAfterSelect: true,
+    });
+    $('#product').selectize({
+        valueField: 'id',
+        labelField: 'name',
+        searchField: 'name',
+        selectOnTab: true,
+        closeAfterSelect: true,
+        onChange: showPrice,
     });
     function reqTownship(id) {
         $.ajax({
@@ -105,6 +112,9 @@ function setUpMap(pos) {
             },
         });
     }
+    function showPrice() {
+        $('#price').text('Price = ' + this.options[this.items[0]].price + 'MMK');
+    }
     $.ajax({
         url: "/nrcregions/",
         type: "get",
@@ -116,6 +126,19 @@ function setUpMap(pos) {
                     'id': id, 'nrcRegion': id + '/'
                 })
             })
+        },
+    });
+    $.ajax({
+        url: "/products",
+        type: "get",
+        dataType: "json",
+        success: function (response) {
+            let select = $('#product')[0].selectize;
+            response.map(function (product) {
+                select.addOption({
+                    'id': product.id, 'name': product.name, 'price': product.price,
+                });
+            });
         },
     });
 })()
