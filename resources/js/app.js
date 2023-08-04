@@ -6,7 +6,7 @@ import '@selectize/selectize';
 // Promisifying the geolocation API
 let getLocationPromise = () => {
     return new Promise(function (resolve, reject) {
-        let defaultPos = L.latLng(16.8067072, 96.1806336);
+        let defaultPos = L.latLng(16.87025319283739, 96.14076197147371);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => resolve(L.latLng(position.coords.latitude, position.coords.longitude)),
@@ -31,11 +31,11 @@ function setUpMap(pos) {
     var pin;
     pin = L.marker(pos, { riseOnHover: true, draggable: true });
     pin.addTo(map);
-    $('#lat').val(pos.lat);
-    $('#lng').val(pos.lng);
+    $('#lat').val(pos.lat.toFixed(7));
+    $('#lng').val(pos.lng.toFixed(7));
     map.on('click', function (ev) {
-        $('#lat').val(ev.latlng.lat);
-        $('#lng').val(ev.latlng.lng);
+        $('#lat').val(ev.latlng.lat.toFixed(7));
+        $('#lng').val(ev.latlng.lng.toFixed(7));
         pin.setLatLng(ev.latlng);
     });
 }

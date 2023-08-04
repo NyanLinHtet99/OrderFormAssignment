@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('secondary_phone')->nullable();
             $table->string('email');
             $table->string('address');
-            $table->decimal('latitude', 16);
-            $table->decimal('longitude', 16);
+            $table->decimal('latitude', 9);
+            $table->decimal('longitude', 9);
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });

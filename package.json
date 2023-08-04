@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@selectize/selectize": "^0.15.2",
+        "datatables.net-dt": "^1.13.6",
         "jquery": "^3.7.0",
         "leaflet": "^1.9.4"
     }
