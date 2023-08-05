@@ -28,6 +28,10 @@ class OrderController extends Controller
         ]);
         $product = Product::find($validated['product']);
         $nrc = $validated['nrc_region'] . '/' . $validated['nrc_township'] . '(' . $validated['nrc_type'] . ')' . $validated['nrc_no'];
+        $nrcCheck = Order::where('nrc', $nrc)->first();
+        if ($nrcCheck) {
+            return back()->withInput($request->input())->withErrors(['nrcExists' => 'This NRC already has placed an order.']);
+        }
         $order = $product->orders()->create([
             'nrc' => $nrc,
             'name' => $validated['name'],
@@ -61,7 +65,7 @@ class OrderController extends Controller
         $start = $request->input('start');
         $sort = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
-
+        if ($sort === "product") $sort = "product_id";
         if (empty($request->input('search.value'))) {
             $orders = Order::offset($start)
                 ->limit($limit)
@@ -69,10 +73,11 @@ class OrderController extends Controller
                 ->get();
         } else {
             $search = $request->input('search.value');
-
             $orders =  Order::where('name', 'LIKE', "%{$search}%")
                 ->orWhere('phone', 'LIKE', "%{$search}%")
-                ->orWhere('product', 'LIKE', "%{$search}%")
+                ->orWhereHas('product', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                })
                 ->offset($start)
                 ->limit($limit)
                 ->orderBy($sort, $dir)
@@ -80,7 +85,9 @@ class OrderController extends Controller
 
             $totalFiltered = Order::where('name', 'LIKE', "%{$search}%")
                 ->orWhere('phone', 'LIKE', "%{$search}%")
-                ->orWhere('product', 'LIKE', "%{$search}%")
+                ->orWhereHas('product', function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%");
+                })
                 ->count();
         }
 

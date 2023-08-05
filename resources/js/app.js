@@ -3,7 +3,9 @@ import $ from "jquery";
 window.$ = window.jQuery = $;
 import L from "leaflet";
 import '@selectize/selectize';
+import selectize from '@selectize/selectize';
 // Promisifying the geolocation API
+
 let getLocationPromise = () => {
     return new Promise(function (resolve, reject) {
         let defaultPos = L.latLng(16.87025319283739, 96.14076197147371);
@@ -41,13 +43,13 @@ function setUpMap(pos) {
 }
 (function () {
     'use strict'
-    var form = document.querySelector('.needs-validation')
+    var form = document.querySelector('.needs-validation');
     form.addEventListener('submit', function (event) {
         if (!customValidation() || !form.checkValidity()) {
             event.preventDefault()
             event.stopPropagation()
         }
-
+        $('#nrc_no_feedback').text('Please provide a valid NRC');
         form.classList.add('was-validated');
     });
     function customValidation() {
@@ -94,6 +96,7 @@ function setUpMap(pos) {
         onChange: showPrice,
     });
     function reqTownship(id) {
+        if (!id) $('#nrc_township')[0].selectize.clearOptions();
         $.ajax({
             url: "/nrctownships",
             data: { "id": id },
@@ -107,12 +110,16 @@ function setUpMap(pos) {
                         'name': name
                     })
                 })
+                if ($('#nrc_township').is('[data-oldValue]')) {
+                    select.setValue($('#nrc_township').attr('data-oldValue'));
+                }
                 select.settings.placeholder = 'OoKaMa';
                 select.updatePlaceholder();
             },
         });
     }
     function showPrice() {
+        $('#product').removeClass('is-invalid');
         $('#price').text('Price = ' + this.options[this.items[0]].price + 'MMK');
     }
     $.ajax({
@@ -126,6 +133,9 @@ function setUpMap(pos) {
                     'id': id, 'nrcRegion': id + '/'
                 })
             })
+            if ($('#nrc_region').is('[data-oldValue]')) {
+                select.setValue($('#nrc_region').attr('data-oldValue'));
+            }
         },
     });
     $.ajax({
@@ -139,6 +149,10 @@ function setUpMap(pos) {
                     'id': product.id, 'name': product.name, 'price': product.price,
                 });
             });
+            if ($('#product').is('[data-oldValue]')) {
+                select.setValue($('#product').attr('data-oldValue'));
+            }
         },
     });
+
 })()
