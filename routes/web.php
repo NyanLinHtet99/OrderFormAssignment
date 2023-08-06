@@ -19,18 +19,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 Route::get('/orders', function () {
     return view('orders.index');
 })->middleware('auth');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/nrcregions', [NrcRegionController::class, 'index']);
-Route::get('/nrctownships', [NrcTownshipController::class, 'show']);
-Route::get('/products', [ProductController::class, 'index']);
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::post('/order/store', [OrderController::class, 'store']);
-Route::post('/orders', [OrderController::class, 'index']);

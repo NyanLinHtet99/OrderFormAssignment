@@ -1,21 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.home')
 
 @section('content')
-    @if ($errors->any())
-        <?= $errors ?>
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-10">
+            <div class="col-md-11">
                 <div class="alert alert-primary d-none" role="alert" id="geoservice">
-                    Geolocation service is not available. Please select your loaction.
+                    Geolocation service is not available. Location is set to default.
+                    Please select your loaction.
                 </div>
                 <form action="/order/store" method="POST" class="row g-3 mt-4 needs-validation" novalidate>
                     @csrf
@@ -68,30 +59,45 @@
                     </div>
                     <div class="col-md-3">
                         <label for="name" class="form-label">Name*</label>
-                        <input type="text" class="form-control" id="name" placeholder="Your Name" name="name"
-                            required value="{{ old('name') }}">
+                        <input type="text"
+                            class="form-control
+                            @error('name')
+                                is-invalid
+                            @enderror"
+                            id="name" placeholder="Your Name" name="name" required value="{{ old('name') }}">
                         <div class="invalid-feedback">
                             Please provide a name
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label for="phone" class="form-label">Mobile Phone*</label>
-                        <input type="text" class="form-control" id="phone" placeholder="+95995*******" required
-                            name="phone" value="{{ old('phone') }}">
+                        <input type="text"
+                            class="form-control @error('phone')
+                        is-invalid
+                    @enderror"
+                            id="phone" placeholder="+95995*******" required name="phone" value="{{ old('phone') }}">
                         <div class="invalid-feedback">
                             Please provide a valid phone number either starting with +95 or 09
                         </div>
                     </div>
                     <div class="col-md-3">
                         <label for="secondary-phone" class="form-label">Phone</label>
-                        <input type="text" class="form-control" id="secondary-phone" placeholder="+95995*******"
-                            name="secondary_phone" value="{{ old('secondary_phone') }}">
+                        <input type="text"
+                            class="form-control @error('secondary-phone')
+                        is-invalid
+                    @enderror"
+                            id="secondary-phone" placeholder="+95995*******" name="secondary_phone"
+                            value="{{ old('secondary_phone') }}">
 
                     </div>
                     <div class="col-md-3">
                         <label for="email" class="form-label">Email*</label>
-                        <input type="email" class="form-control" id="email" required name="email"
-                            placeholder="Enter your email address" value="{{ old('email') }}">
+                        <input type="email"
+                            class="form-control @error('email')
+                        is-invalid
+                    @enderror"
+                            id="email" required name="email" placeholder="Enter your email address"
+                            value="{{ old('email') }}">
                         <div class="invalid-feedback">
                             Please provide a valid email.
                         </div>
@@ -103,15 +109,22 @@
                         <div class="col-md-5 row">
                             <div class="col-md-12">
                                 <label for="address" class="form-label">Address*</label>
-                                <textarea class="form-control" id="address" rows="3" required name="address" placeholder="Enter your address">{{ old('address') }}</textarea>
+                                <textarea
+                                    class="form-control @error('address')
+                                is-invalid
+                            @enderror"
+                                    id="address" rows="3" required name="address" placeholder="Enter your address">{{ old('address') }}</textarea>
                                 <div class="invalid-feedback">
                                     Please enter an address
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <label for="product" class="form-label">Product*</label>
-                                <select type='text' class="form-select" aria-label="products" id="product"
-                                    placeholder="Select a product" name="product"
+                                <select type='text'
+                                    class="form-select @error('product')
+                                is-invalid
+                            @enderror"
+                                    aria-label="products" id="product" placeholder="Select a product" name="product"
                                     @if (old('product')) data-oldValue="{{ old('product') }}" @endif>
                                 </select>
                                 <div class="invalid-feedback">
@@ -123,12 +136,14 @@
                                 <div class="col-md-6">
                                     <label for="lat" class="form-label">Latitude*</label>
                                     <input type="text" class="form-control" id="lat" name="lat" required
-                                        readonly value="{{ old('lat') }}">
+                                        readonly
+                                        @if (old('lat')) data-oldValue="{{ old('lat') }}" @endif>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="lng" class="form-label">Longitude*</label>
                                     <input type="text" class="form-control" id="lng" name="lng" required
-                                        readonly value="{{ old('lng') }}">
+                                        readonly
+                                        @if (old('lng')) data-oldValue="{{ old('lng') }}" @endif">
                                 </div>
                             </div>
                             <div class="col-md-12 mt-4 d-flex justify-content-end">

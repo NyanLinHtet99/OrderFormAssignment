@@ -77,10 +77,10 @@ class OrderController extends Controller
                 ->get();
         } else {
             $search = $request->input('search.value');
-            $orders =  Order::where('name', 'LIKE', "%{$search}%")
+            $orders =  Order::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%'])
                 ->orWhere('phone', 'LIKE', "%{$search}%")
                 ->orWhereHas('product', function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%");
+                    $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']);
                 })
                 ->offset($start)
                 ->limit($limit)
@@ -117,6 +117,6 @@ class OrderController extends Controller
             "data"            => $data
         );
 
-        echo json_encode($json_data);
+        return $json_data;
     }
 }

@@ -1,3 +1,7 @@
 #map {
     height: 400px;
 }
+
+.selectize-dropdown {
+    z-index: 9999 !important;
+}

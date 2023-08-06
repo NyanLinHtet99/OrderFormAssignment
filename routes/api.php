@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\NrcRegionController;
+use App\Http\Controllers\NrcTownshipController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+Route::middleware('auth:sanctum')->group(function () {
+    // Your protected API routes here
+    Route::get('/nrcregions', [NrcRegionController::class, 'index']);
+    Route::get('/nrctownships', [NrcTownshipController::class, 'show']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'index']);
 });

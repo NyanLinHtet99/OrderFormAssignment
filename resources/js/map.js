@@ -8,7 +8,10 @@ let map = function () {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => resolve(L.latLng(position.coords.latitude, position.coords.longitude)),
-                    () => reject(defaultPos)
+                    () => {
+                        $('#geoservice').removeClass('d-none');
+                        reject(defaultPos);
+                    }
                 );
             }
             else {
@@ -34,12 +37,19 @@ let map = function () {
         });
     }
     function init() {
+        if (oldValue()) {
+            setUpMap(L.latLng($('#lat').attr('data-oldValue'), $('#lng').attr('data-oldValue')))
+            return;
+        }
         getLocationPromise()
             .then(setUpMap)
             .catch(setUpMap);
     }
     function check() {
         return Boolean(navigator.geolocation);
+    }
+    function oldValue() {
+        return ($('#lat').is('[data-oldValue]') || $('#lng').is('[data-oldValue]'));
     }
     return { init, check };
 }();
