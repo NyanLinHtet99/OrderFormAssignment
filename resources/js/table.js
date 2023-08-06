@@ -3,10 +3,9 @@ import $ from "jquery";
 window.$ = window.jQuery = $;
 import DataTable from 'datatables.net-dt';
 import 'datatables.net-bs5/js/dataTables.bootstrap5';
-const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+const csrfToken = $('meta[name="csrf-token"]').attr('content');
 $(function () {
-
-    $('#posts').DataTable({
+    $('#orders').DataTable({
         "processing": true,
         "serverSide": true,
         "ajax": {
@@ -28,6 +27,7 @@ $(function () {
         'columnDefs': [{
             'targets': [4, 6], // column index (start from 0)
             'orderable': false, // set orderable false for selected columns
-        }]
+        }],
+        'order': [[0, 'desc']],
     });
 });

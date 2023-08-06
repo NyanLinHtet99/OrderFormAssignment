@@ -1,158 +1,196 @@
 import './bootstrap';
 import $ from "jquery";
 window.$ = window.jQuery = $;
-import L from "leaflet";
 import '@selectize/selectize';
 import selectize from '@selectize/selectize';
-// Promisifying the geolocation API
+import map from './map'
+//This is for bootstrap5 validation
+let validation = function () {
+    let form = document.querySelector('.needs-validation');
 
-let getLocationPromise = () => {
-    return new Promise(function (resolve, reject) {
-        let defaultPos = L.latLng(16.87025319283739, 96.14076197147371);
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => resolve(L.latLng(position.coords.latitude, position.coords.longitude)),
-                () => reject(defaultPos)
-            );
-        }
-        else {
-            resolve(defaultPos);
-        }
-    });
-};
-
-getLocationPromise()
-    .then(setUpMap)
-    .catch(setUpMap);
-function setUpMap(pos) {
-    var map = L.map('map').setView([pos.lat, pos.lng], 17);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-    var pin;
-    pin = L.marker(pos, { riseOnHover: true, draggable: true });
-    pin.addTo(map);
-    $('#lat').val(pos.lat.toFixed(7));
-    $('#lng').val(pos.lng.toFixed(7));
-    map.on('click', function (ev) {
-        $('#lat').val(ev.latlng.lat.toFixed(7));
-        $('#lng').val(ev.latlng.lng.toFixed(7));
-        pin.setLatLng(ev.latlng);
-    });
-}
-(function () {
-    'use strict'
-    var form = document.querySelector('.needs-validation');
-    form.addEventListener('submit', function (event) {
-        if (!customValidation() || !form.checkValidity()) {
-            event.preventDefault()
-            event.stopPropagation()
-        }
-        $('#nrc_no_feedback').text('Please provide a valid NRC');
-        form.classList.add('was-validated');
-    });
     function customValidation() {
-        if ($('#product').val() === '') {
-            $('#product').removeClass('is-valid');
-            $('#product').addClass('is-invalid');
+        validateSelect('#product');
+        validateSelect('#nrc_region');
+        validateSelect('#nrc_township');
+    }
+    function validateSelect(id) {
+        if ($(id).val() === '') {
+            $(id).removeClass('is-valid');
+            $(id).addClass('is-invalid');
             return false;
         }
-        $('#product').removeClass('is-invalid');
-        $('#product').addClass('is-valid');
+        $(id).removeClass('is-invalid');
+        $(id).addClass('is-valid');
         return true;
     }
-    // $('select').selectize({
-    //     sortField: 'text',
-    //     items: [],
-    // });
-    // $('select').each(
-    //     function () {
-    //         var control = this.selectize;
-    //         control.clear();
-    //     }
-    // )
-    $('#nrc_region').selectize({
-        valueField: 'id',
-        labelField: 'nrcRegion',
-        searchField: 'nrcRegion',
-        selectOnTab: true,
-        closeAfterSelect: true,
-        onChange: reqTownship,
-    });
-    $('#nrc_township').selectize({
-        valueField: 'name',
-        labelField: 'name',
-        searchField: 'name',
-        selectOnTab: true,
-        closeAfterSelect: true,
-    });
-    $('#product').selectize({
-        valueField: 'id',
-        labelField: 'name',
-        searchField: 'name',
-        selectOnTab: true,
-        closeAfterSelect: true,
-        onChange: showPrice,
-    });
+    function addEvent() {
+        form.addEventListener('submit', function (event) {
+            if (!customValidation() || !form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            //To change the feedback text to defualt after changing it to "Nrc Exists" in SSR
+            $('#nrc_no_feedback').text('Please provide a valid NRC');
+            form.classList.add('was-validated');
+        });
+    }
+    function init() {
+        addEvent();
+    }
+    return { init }
+}();
+
+let productSelector = function () {
+    //set an empty selectize object so that the css is properly setup while getting data from ajax
+    function defaultRender() {
+        $('#product').selectize({
+            valueField: 'id',
+            labelField: 'name',
+            searchField: 'name',
+            selectOnTab: true,
+            closeAfterSelect: true,
+            onChange: showPrice,
+        });
+    }
+    //called by the product onChange event. Grab the price of the selected option
+    //set price to empty if the selected option is changed back to empty
+    function showPrice(id) {
+        if (!id) {
+            $('#price').text('');
+            return;
+        }
+        $('#product').removeClass('is-invalid');
+        $('#price').text('Price = ' + this.options[this.items[0]].price + 'MMK');
+    }
+
+    function getData() {
+        $.ajax({
+            url: "/products",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                let select = $('#product')[0].selectize;
+                response.map(function (product) {
+                    select.addOption({
+                        'id': product.id, 'name': product.name, 'price': product.price,
+                    });
+                });
+                //data-oldValue come from SSR where it will attach it if old('product') exists
+                if ($('#product').is('[data-oldValue]')) {
+                    select.setValue($('#product').attr('data-oldValue'));
+                }
+            },
+        });
+    }
+    function init() {
+        defaultRender();
+        getData();
+    }
+    return { init }
+}();
+let nrcRegionSelector = function () {
+    //set an empty selectize object so that the css is properly setup while getting data from ajax
+    //onChange function is set to the reqTownship where it will get the data belonging to the selected option
+    //needs to change it into pub-sub
+    function defaultRender() {
+        $('#nrc_region').selectize({
+            valueField: 'id',
+            labelField: 'nrcRegion',
+            searchField: 'nrcRegion',
+            selectOnTab: true,
+            closeAfterSelect: true,
+            onChange: nrcTownshipSelector.reqTownship,
+        });
+    }
+    function getData() {
+        $.ajax({
+            url: "/nrcregions/",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                let select = $('#nrc_region')[0].selectize;
+                response.map(function (id) {
+                    select.addOption({
+                        'id': id, 'nrcRegion': id + '/'
+                    })
+                })
+                //data-oldValue come from SSR where it will attach it if old('nrc_region') exists
+                if ($('#nrc_region').is('[data-oldValue]')) {
+                    select.setValue($('#nrc_region').attr('data-oldValue'));
+                }
+            },
+        });
+    }
+    function init() {
+        defaultRender();
+        getData();
+    }
+    return { init }
+}();
+let nrcTownshipSelector = function () {
+    const select = $('#nrc_township')[0];
+    //set an empty selectize object so that the css is properly setup while getting data from ajax
+    function defaultRender() {
+        $('#nrc_township').selectize({
+            valueField: 'name',
+            labelField: 'name',
+            searchField: 'name',
+            selectOnTab: true,
+            closeAfterSelect: true,
+        });
+    }
+    /* called by the onChange of nrcRegionSelector grab the value
+    of selected option and if empty clear all the options if exists */
     function reqTownship(id) {
-        if (!id) $('#nrc_township')[0].selectize.clearOptions();
+        if (!id) {
+            //if the value of township is empty change the placeholder so
+            //the user knows it need to select region first
+            changePlaceholder('select region first')
+            select.selectize.clearOptions();
+        }
+        else {
+            //the defualt place holder state that the user needs to select region first
+            changePlaceholder('OoKaMa');
+            getData(id);
+        }
+    }
+    function changePlaceholder(text) {
+        select.selectize.settings.placeholder = text;
+        select.selectize.updatePlaceholder();
+    }
+    function getData(id) {
         $.ajax({
             url: "/nrctownships",
             data: { "id": id },
             type: "get",
             dataType: "json",
             success: function (response) {
-                let select = $('#nrc_township')[0].selectize;
                 select.clearOptions();
                 response.map(function (name) {
-                    select.addOption({
+                    select.selectize.addOption({
                         'name': name
                     })
                 })
+                //data-oldValue come from SSR where it will attach it if old('nrc_township') exists
                 if ($('#nrc_township').is('[data-oldValue]')) {
-                    select.setValue($('#nrc_township').attr('data-oldValue'));
+                    select.selectize.setValue($('#nrc_township').attr('data-oldValue'));
                 }
-                select.settings.placeholder = 'OoKaMa';
-                select.updatePlaceholder();
             },
         });
     }
-    function showPrice() {
-        $('#product').removeClass('is-invalid');
-        $('#price').text('Price = ' + this.options[this.items[0]].price + 'MMK');
+    function init() {
+        defaultRender();
     }
-    $.ajax({
-        url: "/nrcregions/",
-        type: "get",
-        dataType: "json",
-        success: function (response) {
-            let select = $('#nrc_region')[0].selectize;
-            response.map(function (id) {
-                select.addOption({
-                    'id': id, 'nrcRegion': id + '/'
-                })
-            })
-            if ($('#nrc_region').is('[data-oldValue]')) {
-                select.setValue($('#nrc_region').attr('data-oldValue'));
-            }
-        },
-    });
-    $.ajax({
-        url: "/products",
-        type: "get",
-        dataType: "json",
-        success: function (response) {
-            let select = $('#product')[0].selectize;
-            response.map(function (product) {
-                select.addOption({
-                    'id': product.id, 'name': product.name, 'price': product.price,
-                });
-            });
-            if ($('#product').is('[data-oldValue]')) {
-                select.setValue($('#product').attr('data-oldValue'));
-            }
-        },
-    });
+    return { init, reqTownship }
+}();
 
+(function () {
+    if (!map.check()) {
+        $('#geoservice').removeClass('d-none');
+    }
+    map.init();
+    validation.init();
+    productSelector.init();
+    nrcRegionSelector.init();
+    nrcTownshipSelector.init();
 })()

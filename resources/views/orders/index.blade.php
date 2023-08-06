@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12 w-75 mx-auto">
-            <table class="table table-striped"id="posts" width="100%">
+            <table class="table table-striped"id="orders" width="100%">
                 <thead>
                     <th>Id</th>
                     <th>NRC</th>
