@@ -9,9 +9,10 @@ let validation = function () {
     let form = document.querySelector('.needs-validation');
 
     function customValidation() {
-        return validateSelect('#product') &&
-            validateSelect('#nrc_region') &&
-            validateSelect('#nrc_township');
+        let bool1 = validateSelect('#product');
+        let bool2 = validateSelect('#nrc_region');
+        let bool3 = validateSelect('#nrc_township');
+        return bool1 && bool2 && bool3;
     }
     function validateSelect(id) {
         if ($(id).val() === '') {
@@ -23,6 +24,7 @@ let validation = function () {
         $(id).addClass('is-valid');
         return true;
     }
+
     function addEvent() {
         form.addEventListener('submit', function (event) {
 

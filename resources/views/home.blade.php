@@ -71,7 +71,7 @@
                     </div>
                     <div class="col-md-3">
                         <label for="phone" class="form-label">Mobile Phone*</label>
-                        <input type="text"
+                        <input pattern="^[\+]?[0-9]{3}?[0-9]{8,9}$"
                             class="form-control @error('phone')
                         is-invalid
                     @enderror"
