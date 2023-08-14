@@ -83,12 +83,14 @@
                     <div class="col-md-3">
                         <label for="secondary-phone" class="form-label">Phone</label>
                         <input type="text"
-                            class="form-control @error('secondary-phone')
+                            class="form-control @error('secondary_phone')
                         is-invalid
                     @enderror"
                             id="secondary-phone" placeholder="+95995*******" name="secondary_phone"
                             value="{{ old('secondary_phone') }}">
-
+                        <div class="invalid-feedback">
+                            Please provide a valid phone number either starting with +95 or 09
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <label for="email" class="form-label">Email*</label>

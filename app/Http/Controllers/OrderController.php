@@ -90,7 +90,7 @@ class OrderController extends Controller
             $totalFiltered = Order::where('name', 'LIKE', "%{$search}%")
                 ->orWhere('phone', 'LIKE', "%{$search}%")
                 ->orWhereHas('product', function ($query) use ($search) {
-                    $query->where('name', 'like', "%{$search}%");
+                    $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($search) . '%']);
                 })
                 ->count();
         }
@@ -102,7 +102,7 @@ class OrderController extends Controller
                 $nestedData['nrc'] = $order->nrc;
                 $nestedData['name'] = $order->name;
                 $nestedData['phone'] = $order->phone;
-                $nestedData['secondary_phone'] = is_null($order->secondary_phone) ? $order->secondary_phone : '-';
+                $nestedData['secondary_phone'] = is_null($order->secondary_phone) ? '-' : $order->secondary_phone;
                 $nestedData['email'] = $order->email;
                 $nestedData['address'] = $order->address;
                 $nestedData['product'] = $order->product->name;

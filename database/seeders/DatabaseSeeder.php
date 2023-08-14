@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         Product::create(['name' => 'Product A', 'price' => 15000]);
         Product::create(['name' => 'Product B', 'price' => 20000]);
         Product::create(['name' => 'Product C', 'price' => 30000]);
-        Order::factory(10)->create();
+        Order::factory(100)->create();
         NrcRegion::factory(14)->create()->each(function ($region) {
             $region->nrcTownships()->saveMany(NrcTownship::factory(rand(1, 12))->make());
         });
